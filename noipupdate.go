@@ -12,8 +12,13 @@ import (
 var waitTime int = 10
 var host string = "fbrx.noip.me"
 var ipResolverHost string = "http://whatismyip.akamai.com/" //http://v4.ident.me/
+var username, password, noipHost string
 
 func main() {
+    username = "user"
+    password = "pass"
+    noipHost = "host"
+
     var currentIp, dnsIp string
     for{
         fmt.Println(time.Now())
@@ -41,6 +46,18 @@ func resolveIpFromDns(host string) string {
 }
 
 func determineCurrentIp() string {
+    curIp := callUrlAndGetResponse(ipResolverHost)
+    fmt.Printf("determined current ip from %v: %v\n", ipResolverHost, curIp)
+    return curIp
+}
+
+func updateIp(newIp string) string {
+    url := "http://" + username + ":" + password + "@dynupdate.no-ip.com/nic/update?hostname=" + noipHost + "&myip=" + newIp
+    fmt.Printf("...updated to %v using url %v...\n", newIp, url)
+    return newIp
+}
+
+func callUrlAndGetResponse(url string) string{
     resp, err := http.Get(ipResolverHost)
     if(err != nil){
         log.Fatal(err)
@@ -51,12 +68,6 @@ func determineCurrentIp() string {
     if(err != nil){
         log.Fatal(err)
     }
-    fmt.Printf("determined current ip from %v: %v\n", ipResolverHost, string(body))
 
     return string(body)
-}
-
-func updateIp(newIp string) string {
-    fmt.Printf("...updated to %v...\n")
-    return newIp
 }
