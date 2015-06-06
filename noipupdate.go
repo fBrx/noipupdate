@@ -19,9 +19,8 @@ func main() {
         fmt.Println(time.Now())
         currentIp = determineCurrentIp()
         dnsIp = resolveIpFromDns(host)
-        fmt.Printf("current ip: %v - ip from dns: %v\n", currentIp, dnsIp)
         if(currentIp == dnsIp){
-            fmt.Println("no change detected...")
+            fmt.Printf("no change detected...going to sleep for %v seconds\n", waitTime)
         }else{
             fmt.Println("deteced change...triggering update")
             updateIp(currentIp)
@@ -33,12 +32,11 @@ func main() {
 
 func resolveIpFromDns(host string) string {
     var addrs, err = net.LookupHost(host)
-    fmt.Println("looking up host: " + host)
     if(err != nil){
         log.Fatal(err)
     }
 
-    fmt.Println("resolved to " + addrs[0])
+    fmt.Printf("resolved host %v to ip: %v\n", host, addrs[0])
     return addrs[0]
 }
 
@@ -53,7 +51,7 @@ func determineCurrentIp() string {
     if(err != nil){
         log.Fatal(err)
     }
-    fmt.Println("determined current ip: " + string(body))
+    fmt.Printf("determined current ip from %v: %v\n", ipResolverHost, string(body))
 
     return string(body)
 }
