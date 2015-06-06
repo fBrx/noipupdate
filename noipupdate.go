@@ -37,7 +37,7 @@ func main() {
     for{
         fmt.Println(time.Now())
         currentIp = determineCurrentIp()
-//        dnsIp = resolveIpFromDns(checkHost)
+        dnsIp = resolveIpFromDns(checkHost)
         if(currentIp == dnsIp){
             fmt.Printf("no change detected...going to sleep for %v seconds\n", interval)
         }else{
@@ -67,7 +67,9 @@ func determineCurrentIp() string {
 
 func updateIp(newIp string) string {
     url := "http://" + username + ":" + password + "@dynupdate.no-ip.com/nic/update?hostname=" + host + "&myip=" + newIp
-    fmt.Printf("...updated to %v using url %v...\n", newIp, url)
+    resp := callUrlAndGetResponse(url)
+    fmt.Printf("updating to %v using url %v...\n", newIp, url)
+    fmt.Println("received response: " + resp)
     return newIp
 }
 
