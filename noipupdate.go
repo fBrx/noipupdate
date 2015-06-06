@@ -9,8 +9,11 @@ import (
 
 func main() {
     var ip, newIp string
+    var waitTime int = 10
+    var host string = "fbrx.noip.me"
     for{
-        newIp = resolveIp("fbrx.noip.me")
+        fmt.Println(time.Now())
+        newIp = resolveIp(host)
         fmt.Printf("current ip: %v - ip from dns: %v\n", ip, newIp)
         if(ip == newIp){
             fmt.Println("no change detected...")
@@ -18,7 +21,7 @@ func main() {
             fmt.Println("deteced change...triggering update")
             ip = updateIp(newIp)
         }
-        time.Sleep(2 * time.Second)
+        time.Sleep((time.Duration(waitTime) * time.Second))
     }
 }
 
