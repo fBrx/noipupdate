@@ -7,6 +7,7 @@ import (
     "log"
     "time"
     "io/ioutil"
+    "flag"
 )
 
 var waitTime int = 10
@@ -15,9 +16,7 @@ var ipResolverHost string = "http://whatismyip.akamai.com/" //http://v4.ident.me
 var username, password, noipHost string
 
 func main() {
-    username = "user"
-    password = "pass"
-    noipHost = "host"
+    initArgs()
 
     var currentIp, dnsIp string
     for{
@@ -32,6 +31,13 @@ func main() {
         }
         time.Sleep((time.Duration(waitTime) * time.Second))
     }
+}
+
+func initArgs() {
+    flag.StringVar(&noipHost, "host", "", "the no-ip hostname to update")
+    flag.StringVar(&username, "username", "", "the no-ip username")
+    flag.StringVar(&password, "password", "", "the no-ip password")
+    flag.Parse()
 }
 
 
