@@ -10,10 +10,25 @@ import (
     "flag"
 )
 
-var waitTime int = 10
-var host string = "fbrx.noip.me"
-var ipResolverHost string = "http://whatismyip.akamai.com/" //http://v4.ident.me/
-var username, password, noipHost string
+var ipResolver string //= "http://whatismyip.akamai.com/" //http://v4.ident.me/
+var username, password, host, checkHost string
+var interval int
+
+func initArgs() {
+    flag.StringVar(&host, "host", "", "the no-ip hostname to update")
+    flag.StringVar(&checkHost, "checkHost", "", "the hostname to check for the current ip mapping. will default to host if not set")
+    flag.StringVar(&username, "username", "", "the username of your no-ip account")
+    flag.StringVar(&password, "password", "", "the password of your no-ip account")
+    flag.IntVar(&interval, "interval", 5, "the interval (in seconds) in which to perform update checks")
+    flag.StringVar(&ipResolver, "ipResolver", "http://v4.ident.me/", "the url to check forthe current ip. response must only contain ip as plain text.")
+
+    flag.Parse()
+
+    if(checkHost == ""){
+        checkHost = host
+    }
+
+}
 
 func main() {
     initArgs()
@@ -22,22 +37,15 @@ func main() {
     for{
         fmt.Println(time.Now())
         currentIp = determineCurrentIp()
-        dnsIp = resolveIpFromDns(host)
+//        dnsIp = resolveIpFromDns(checkHost)
         if(currentIp == dnsIp){
-            fmt.Printf("no change detected...going to sleep for %v seconds\n", waitTime)
+            fmt.Printf("no change detected...going to sleep for %v seconds\n", interval)
         }else{
             fmt.Println("deteced change...triggering update")
             updateIp(currentIp)
         }
-        time.Sleep((time.Duration(waitTime) * time.Second))
+        time.Sleep((time.Duration(interval) * time.Second))
     }
-}
-
-func initArgs() {
-    flag.StringVar(&noipHost, "host", "", "the no-ip hostname to update")
-    flag.StringVar(&username, "username", "", "the no-ip username")
-    flag.StringVar(&password, "password", "", "the no-ip password")
-    flag.Parse()
 }
 
 
@@ -52,19 +60,19 @@ func resolveIpFromDns(host string) string {
 }
 
 func determineCurrentIp() string {
-    curIp := callUrlAndGetResponse(ipResolverHost)
-    fmt.Printf("determined current ip from %v: %v\n", ipResolverHost, curIp)
+    curIp := callUrlAndGetResponse(ipResolver)
+    fmt.Printf("determined current ip from %v: %v\n", ipResolver, curIp)
     return curIp
 }
 
 func updateIp(newIp string) string {
-    url := "http://" + username + ":" + password + "@dynupdate.no-ip.com/nic/update?hostname=" + noipHost + "&myip=" + newIp
+    url := "http://" + username + ":" + password + "@dynupdate.no-ip.com/nic/update?hostname=" + host + "&myip=" + newIp
     fmt.Printf("...updated to %v using url %v...\n", newIp, url)
     return newIp
 }
 
 func callUrlAndGetResponse(url string) string{
-    resp, err := http.Get(ipResolverHost)
+    resp, err := http.Get(url)
     if(err != nil){
         log.Fatal(err)
     }
