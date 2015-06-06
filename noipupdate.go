@@ -10,7 +10,7 @@ import (
 func main() {
     var ip, newIp string
     var waitTime int = 10
-    var host string = "fbrx.noip.me"
+    var host string = "fbrx123123123.noip.me"
     for{
         fmt.Println(time.Now())
         newIp = resolveIp(host)
