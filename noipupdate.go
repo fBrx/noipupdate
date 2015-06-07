@@ -10,7 +10,7 @@ import (
     "flag"
 )
 
-var ipResolver string //= "http://whatismyip.akamai.com/" //http://v4.ident.me/
+var ipResolver string
 var username, password, host, checkHost string
 var interval int
 
@@ -19,8 +19,8 @@ func initArgs() {
     flag.StringVar(&checkHost, "checkHost", "", "the hostname to check for the current ip mapping. will default to host if not set")
     flag.StringVar(&username, "username", "", "the username of your no-ip account")
     flag.StringVar(&password, "password", "", "the password of your no-ip account")
-    flag.IntVar(&interval, "interval", 5, "the interval (in seconds) in which to perform update checks")
-    flag.StringVar(&ipResolver, "ipResolver", "http://v4.ident.me/", "the url to check forthe current ip. response must only contain ip as plain text.")
+    flag.IntVar(&interval, "interval", 300, "the interval (in seconds) in which to perform update checks")
+    flag.StringVar(&ipResolver, "ipResolver", "http://whatismyip.akamai.com/", "the url to check for the current ip. response must only contain ip as plain text.")
 
     flag.Parse()
 
@@ -67,8 +67,8 @@ func determineCurrentIp() string {
 
 func updateIp(newIp string) string {
     url := "http://" + username + ":" + password + "@dynupdate.no-ip.com/nic/update?hostname=" + host + "&myip=" + newIp
-    resp := callUrlAndGetResponse(url)
     fmt.Printf("updating to %v using url %v...\n", newIp, url)
+    resp := callUrlAndGetResponse(url)
     fmt.Println("received response: " + resp)
     return newIp
 }
