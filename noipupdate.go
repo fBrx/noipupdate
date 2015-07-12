@@ -13,13 +13,15 @@ import (
 var ipResolver string
 var username, password, host, checkHost string
 var interval int
+var verbose bool
 
 func initArgs() {
     flag.StringVar(&host, "host", "", "the no-ip hostname to update")
-    flag.StringVar(&checkHost, "checkHost", "", "the hostname to check for the current ip mapping. will default to host if not set")
+    flag.StringVar(&checkHost, "checkHost", "", "the hostname to check for the current dns entry. will default to host if not set")
     flag.StringVar(&username, "username", "", "the username of your no-ip account")
     flag.StringVar(&password, "password", "", "the password of your no-ip account")
     flag.IntVar(&interval, "interval", 300, "the interval (in seconds) in which to perform update checks")
+    flag.BoolVar(&verbose, "v", false, "enable verbose logging")
     flag.StringVar(&ipResolver, "ipResolver", "http://whatismyip.akamai.com/", "the url to check for the current ip. response must only contain ip as plain text.")
 
     flag.Parse()
@@ -68,8 +70,8 @@ func determineCurrentIp() string {
 func updateIp(newIp string) string {
     url := "http://" + username + ":" + password + "@dynupdate.no-ip.com/nic/update?hostname=" + host + "&myip=" + newIp
     fmt.Printf("updating to %v using url %v...\n", newIp, url)
-    resp := callUrlAndGetResponse(url)
-    fmt.Println("received response: " + resp)
+//    resp := callUrlAndGetResponse(url)
+//    fmt.Println("received response: " + resp)
     return newIp
 }
 
