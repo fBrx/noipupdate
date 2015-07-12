@@ -60,8 +60,8 @@ func determineCurrentIp() string {
 func updateIp(newIp string) string {
     url := "http://" + username + ":" + password + "@dynupdate.no-ip.com/nic/update?hostname=" + host + "&myip=" + newIp
     fmt.Printf("updating to %v using url %v...\n", newIp, url)
-//    resp := callUrlAndGetResponse(url)
-//    fmt.Println("received response: " + resp)
+    resp := callUrlAndGetResponse(url)
+    fmt.Println("received response: " + resp)
     return newIp
 }
 
