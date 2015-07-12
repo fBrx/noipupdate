@@ -2,7 +2,7 @@ package main
 
 import (
     "fmt"
-    "net"
+//    "net"
     "net/http"
     "log"
     "time"
@@ -34,31 +34,21 @@ func initArgs() {
 
 func main() {
     initArgs()
-
-    var currentIp, dnsIp string
+    var currentIp, lastIp string
+    currentIp = "not set"
+    lastIp = "not set"
     for{
         fmt.Println(time.Now())
+        lastIp = currentIp
         currentIp = determineCurrentIp()
-        dnsIp = resolveIpFromDns(checkHost)
-        if(currentIp == dnsIp){
-            fmt.Printf("no change detected...going to sleep for %v seconds\n", interval)
+        if(currentIp == lastIp){
+            fmt.Printf("no change detected (current ip is %v)...going to sleep for %v seconds\n", currentIp, interval)
         }else{
-            fmt.Println("deteced change...triggering update")
+            fmt.Printf("detected change (%v to %v)...triggering update\n", lastIp, currentIp)
             updateIp(currentIp)
         }
         time.Sleep((time.Duration(interval) * time.Second))
     }
-}
-
-
-func resolveIpFromDns(host string) string {
-    var addrs, err = net.LookupHost(host)
-    if(err != nil){
-        log.Fatal(err)
-    }
-
-    fmt.Printf("resolved host %v to ip: %v\n", host, addrs[0])
-    return addrs[0]
 }
 
 func determineCurrentIp() string {
